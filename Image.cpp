@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include "Image.h"
+#include "Array.h"
 #include <memory>
 #include <iostream>
 #include <sstream>
@@ -24,56 +25,21 @@ namespace MCHWIL006{
 
     }
 
-    Image::Image(std::string rete){
-        load(rete);
+    Image::Image(){
+      data=move(nullptr);width=height=0;
+      //this=&load(inputfile);
     }
 
     Image::~Image(){
      cout<<"This is a destructor called"<<endl;
       data=nullptr;width=height=0;}
-    void Image::load(std::string sede){
-        int wede,hete;
 
-        ifstream pgdm(sede,ios::in |ios::binary);
-        string toRead;
 
-        if(pgdm.is_open()){
-        getline(pgdm, toRead);
-
-        cout <<"Reading the first few lines to get the height,width and the highest number";
-
-        while(toRead.compare("255")!=0){
-            if(toRead[0]!='#'){
-                if(toRead.compare("P5")!=0){
-                    cout<<toRead<<endl;
-                    istringstream stream (toRead);
-
-                    stream>>hete;
-                    stream>>wede;
-
-                    width=wede;
-                    height=hete;
-                }
-            }
-
-            getline(pgdm, toRead);
-
-            cout<<toRead<<endl;
-        }
-
-        cout<<"Height "<<height<<" The width is "<<width<<endl;
-        int64_t arraysize=height*width;
-
-        cout<<arraysize;
-
-        data.reset(new unsigned char[arraysize]);
-        skipws(pgdm);
-
-        pgdm.read((char*)&data[0], arraysize);
-
-        pgdm.close();
-        }
-
+    Image Image::load(std::string inputfile){
+      ifstream stream(inputfile , ios::in | ios::binary);
+      //Image img;
+      stream>>*this;
+      return *this;
     }
 
     //Copying the constructor things
@@ -134,78 +100,54 @@ namespace MCHWIL006{
 
     }
 
-
-    void Image::save(std::string sede){
-
-        string dataFile = sede + ".pgm";
-        cout<<"A file called "<<dataFile<<"Created";
-        ofstream pgdm(sede,ios::in |ios::binary);
-        string toRead;
-
-        if(pgdm.is_open()){
-            pgdm<<"P5"<<endl;
-            pgdm<<"# CREATOR: GIMP PNM Filter Version 1.1"<<endl;
-            pgdm<<height<<" "<<width <<endl;
-
-            for(int p=0;p<height*width;p+=width){
-
-                for (int a=0;a<width;a++){
-                    pgdm<<data[p];
-                    p+=1;
-                }
-
-                pgdm.close();
-            }
+    void Image::save(std::string out){
+      ofstream stream(out, ios::out | ios::binary | ios::app);
+      stream << (*this);
+  }
 
 
-                cout<<toRead<<endl;
-            }
 
-    }
-
-    Image::Iterator Image::begin(void) const{
-        return Iterator(&(data.get()[0]));
-    }
-
-    Image::Iterator Image::end(void) const{
-        int m=width*height;
-        return Iterator(&(data.get()[m]));
-    }
 
     Image& Image::operator+(const Image & rhs){
-
-        if(rhs.height==width && rhs.height==height){
+      cout<<"Adding"<<endl;
+        if(rhs.height==height && rhs.width==width){
             Image::Iterator beg=this->begin();
             Image::Iterator end=this->end();
             Image::Iterator in=rhs.begin(),inend=rhs.end();
-
+          //cout<<*this<<endl;
+        //  cout<<rhs<<endl;
             while(beg !=end){
-                int sum=*beg+*in;
+              int sum=*beg+*in;
+
 
                 if(sum>255){
-                    sum=255;
+                    *beg=255;
                 }
-                *beg=sum;
+                else{*beg=sum;}
                 ++beg;
                 ++in;
             }
         }
+  cout<<"Addingttttttt"<<endl;
+    //cout<<*this<<endl;
+    //std::cout << "buda mjamaa" << '\n';
         return *this;
     }
 
     Image& Image::operator-(const Image & rhs){
-        if(rhs.height==width && rhs.height==height){
-            Image::Iterator beg=this->begin();
-            Image::Iterator end=this->end();
+        if(rhs.height==height && rhs.width==width){
+            Image::Iterator beg = this->begin();
+            Image::Iterator end = this->end();
             Image::Iterator in=rhs.begin(),inend=rhs.end();
 
             while(beg !=end){
-                int diff=*beg-*in;
+              int diff=*beg-*in;
+
 
                 if(diff<0){
-                    diff=0;
+                    *beg=0;
                 }
-                *beg=diff;
+                else{*beg=diff;}
                 ++beg;
                 ++in;
             }
@@ -245,15 +187,17 @@ namespace MCHWIL006{
     }
 
     Image& Image::operator/(const Image & rhs){
-        if(rhs.height==width && rhs.height==height){
+        if(rhs.width==width && rhs.height==height){
             Image::Iterator beg=this->begin();
             Image::Iterator end=this->end();
             Image::Iterator in=rhs.begin(),inend=rhs.end();
 
             while(beg !=end){
 
-                if(*in==255){*in=*beg;}
-                else{*in=0;}
+                if(*in==255){
+                  *beg=*beg; }
+                  else{
+                    *beg=0; }
 
                 ++beg;
                 ++in;
@@ -263,130 +207,155 @@ namespace MCHWIL006{
     }
 
 
+ostream &operator << (ostream& pgdm, const Image& other){
 
-    ostream& operator<<(ostream& pgdm,const Image& other){
-
-
-        if(pgdm){
+    if(!pgdm){
+      cout<<"unable to open file"<<endl;
+    }
+ else{
             pgdm<<"P5"<<endl;
             pgdm<<"# CREATOR: GIMP PNM Filter Version 1.1"<<endl;
             pgdm<<other.height<<" "<<other.width <<endl;
-
-            for(int p=0;p<other.height*other.width;p+=other.width){
-
-                for (int a=0;a<other.width;a++){
-                    pgdm<<other.data[p];
-                    p+=1;
-                }
-
-
-            }
-
-
-
-        }
-        return pgdm;
+            pgdm<<255<<endl;
+            //int64_t arraysize=other.height*other.width;
+            //other.data.reset(new unsigned char[arraysize]);
+            //other.data.reset(new unsigned char*(other.width*other.height));
+            pgdm.write((char*)other.data.get(),(other.height*other.width));
+          cout<<"saved"<<endl;
     }
-
-    istream& operator >>(istream& pgdm,Image& other){
+return pgdm;
+}
+istream & operator >>(istream& pgdm,Image& other){
         int wede,hete;
-
-
         string toRead;
 
+        if(!pgdm){
+          cout<<"unable to open file"<<endl;
+        }
         if(pgdm){
             getline(pgdm, toRead);
-
-            cout <<"Reading the first few lines to get the height,width and the highest number";
-
+            cout <<"Reading the first few lines to get the height,width and the highest number"<<endl;
             while(toRead.compare("255")!=0){
                 if(toRead[0]!='#'){
                     if(toRead.compare("P5")!=0){
                         cout<<toRead<<endl;
                         istringstream stream (toRead);
-
                         stream>>hete;
                         stream>>wede;
-
                         other.width=wede;
                         other.height=hete;
                     }
                 }
 
                 getline(pgdm, toRead);
-
                 cout<<toRead<<endl;
             }
-
             cout<<"Height "<<other.height<<" The width is "<<other.width<<endl;
             int64_t arraysize=other.height*other.width;
-
-            cout<<arraysize;
-
+            cout<<arraysize<<endl;
             other.data.reset(new unsigned char[arraysize]);
-            skipws(pgdm);
+            //skipws(pgdm);
 
-            pgdm.read((char*)&other.data[0], arraysize);
-
+            pgdm.read((char*)other.data.get(),arraysize);
 
         }
         return pgdm;
     }
 
-    Image::Iterator::Iterator(const Iterator &rhs){
-        ptr=rhs.ptr;
+Image Image::operator%(Matrix h){
 
+  Image::Iterator beg=this->begin();
+  Image::Iterator end=this->end();
+
+  Image::Iterator beg2=this->begin();
+  Image::Iterator end2=this->end();
+  float yeret[height][width];
+
+  for(int m0=0;m0<height;m0++){
+    for(int m1=0;m1<width;m1++){
+      yeret[m0][m1]=(float)*beg2;
+      //scout<<yeret[m0][m1]<<endl;
+      ++beg2;
     }
+  }
+  //std::cout<<"Height is "<<height<<endl;
+  for(int p=0;p<height;p++){
+    for(int x=0;x<width;x++){
+     int xcentre=x;//put the image at the centre
+     //std::cout<<"ycentre"<<xcentre<<endl;
 
-    Image::Iterator::Iterator(unsigned char* p):ptr(p){}
+     int ycentre=p;//put the image at the centre
+     //std::cout<<"ycentre"<<ycentre<<endl;
 
-    Image::Iterator::Iterator(Iterator && other){
-        ptr=other.ptr;
-        other.ptr=nullptr;
+     int ret=h.N/2;
+     //std::cout<<"ycentre"<<ycentre<<endl;
+
+     int were=0;
+     int were1=0;
+
+     float jutre[50][50];
+
+     for(int a=ycentre+ret;a>=ycentre-ret;a--){
+       //std::cout<<"Height is were1"<<height<<endl;
+
+       //cout<<a<<endl;
+       //cout<<"Am here"<<endl;
+
+       for(int b=xcentre-ret;b<=xcentre+ret;b++){
+
+         //cout<<b<<endl;
+
+
+        //if(a<0 || a>height){
+        int we=0; int er=0;
+         we=reflect(height,a);
+         //cout<<a<<endl;
+      // }
+
+       //if(b<0 || b>width){
+         er=reflect(width,b);
+       jutre[were][were1]=yeret[we][er];
+       //cout<<"a "<<a<<"b "<<b<<endl;
+       //cout<<jutre[were][were1]<<endl;
+       were1+=1;
+       }
+       //cout<<were<<endl;
+       were+=1;
+     }
+     float weightedsum=0.0;
+    for(int b=0;b<h.N;b++){
+      for(int b1=0;b1<h.N;b1++){
+        //cout<<jutre[b][b1]<<" "<<h.data[b][b1]<<endl;
+        weightedsum+=jutre[b][b1]*h.data[b][b1];
+      }
     }
+    //cout<<p<<endl;
+    *beg=weightedsum;
+    //cout<<sum<<endl;
+    ++beg;
+    //cout<<"sumqawaqawe"<<endl;
+  }
 
-    Image::Iterator::~Iterator(){ptr=nullptr;}
+}
+//std::cout<<"Am here"<<endl;
+ //h.data[h.data.size()/2][h.data.size()/2]
 
-    Image::Iterator & Image::Iterator::operator=(const Iterator& other){
+ return *this;
 
-        if(this==&other){return *this;}
+}
 
-        ptr=other.ptr;
-
-        return *this;
-
+int Image::reflect(int M, int x) //This mehod is for reflecting values of pixel off the grid
+{
+    if(x<0)
+    {
+        return ((x)*-1)- 1;
     }
-
-    Image::Iterator & Image::Iterator::operator=(Iterator&& other){
-
-
-
-        ptr=other.ptr;
-
-        other.ptr=nullptr;
-        return *this;
-
+    if(x >=M)
+    {
+        return (2*M )- (x)- 1;
     }
+   return x;
+}
 
-    Image::Iterator & Image::Iterator::operator++(){
 
-        ptr++;
-        return *this;
-
-    }
-
-    Image::Iterator & Image::Iterator::operator--(){
-        ptr--;
-        return *this;
-
-    }
-    unsigned char& Image::Iterator::operator*(){
-
-        return *ptr;
-
-    }
-
-    bool Image::Iterator::operator!=(const Iterator& other){
-        return (ptr ==other.ptr);
-    }
 }
