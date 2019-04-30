@@ -28,7 +28,8 @@ by checking using the REQUIRE from CATCH_CONFIG_MAIN then we will fully understa
 works fine if these methods here passes all the tests.
 
 */
-TEST_CASE( "Testing the image methods using the above procedure") {
+/////////TASK 1 FOR TESTING COPY CONSTRUCTOR AND THRESHOLD OPERATOR//////
+TEST_CASE( "Testing the image methods copy constructor+default+invert+Threshold operator") {
    //generate a random image data -usigned array of characters
    //size = width*height
    unsigned char* Imagedata = new unsigned char[60];
@@ -46,6 +47,10 @@ TEST_CASE( "Testing the image methods using the above procedure") {
 
    //Let us test both Assignment operator and threshold operator
     Image m4 = m*80; //in this image we know that any value below 80 is zero and any value above is 255
+ //Image m4 is an image mask now via thresholding by 80
+
+ //Create an image mask M2 by creating an invert of m4
+
 
 
     unsigned char* Imagedata2 = new unsigned char[60];
@@ -61,18 +66,92 @@ TEST_CASE( "Testing the image methods using the above procedure") {
 
      Image m3(10,6,Imagedata2);
 
-      Image m9 = m3*80;
-   //cout<<"m7"<<endl;
-    //Image m7(4,4, buffer7);
-    REQUIRE(m4== (!m9)); //test for threshold using carefully generated random numbers.
+    Image m9 = m3*80;
+
+    REQUIRE(m4== (!m9)); //
+}
+
+TEST_CASE( "Testing the image methods adding+mask operators") {
+   //generate a random image data -usigned array of characters
+   //size = width*height
+   unsigned char* Imagedata = new unsigned char[60];
+   //unsigned char* Imagedata2 = new unsigned char[60];
+   for(int i = 0; i< 30; i++){
+        Imagedata[i] = 70;
+       //this will be zero when threshold with an f of 80
+   }
+   for(int i = 0; i< 30; i++){
+       Imagedata[i] =90 ;
+
+      //this should be 255 when we threshold with an f of 80
+   }
+    Image m(10,6,Imagedata);
+
+   //Let us test both Assignment operator and threshold operator
+    Image m4 = m*80; //in this image we know that any value below 80 is zero and any value above is 255
+ //Image m4 is an image mask now via thresholding by 80
+
+ //Create an image mask M2 by creating an invert of m4
 
 
 
-   //REQUIRE(u9 == u8);//test that subtraction saturates to zero, any image - white   = black.
+    unsigned char* Imagedata2 = new unsigned char[60];
+    for(int i = 0; i< 30; i++){
+         Imagedata2[i] = 90;
+        //this will be zero when threshold with an f of 80
+    }
+    for(int i = 0; i< 30; i++){
+        Imagedata2[i] =70 ;
+
+       //this should be 255 when we threshold with an f of 80
+    }
+
+     Image m3(10,6,Imagedata2);
+
+    Image m9 = m3*80;
+
+    REQUIRE(m4== (!m9)); //
+
+// We have two images where one is the invert of the other.
+
+//Create two images now and use each of the invert and mask them.
+
+unsigned char* ImagedataU1 = new unsigned char[60];
+for(int i = 0; i< 30; i++){
+     ImagedataU1[i] =30;
+
+}
+for(int i = 0; i< 30; i++){
+    ImagedataU1[i] =70 ;
+
+
+}
+
+Image U1(10,6,ImagedataU1);
+Image p3=m/U1;
+
+unsigned char* ImagedataU2 = new unsigned char[60];
+for(int i = 0; i< 30; i++){
+     ImagedataU2[i] =30;
+
+}
+for(int i = 0; i< 30; i++){
+    ImagedataU2[i] =70 ;
+
+
+}
+
+Image U2(10,6,ImagedataU2);
+
+Image p=m3/U2;
+
+Image added=p3+p;// When these two are added they should give ma the original image i had before.
+
+REQUIRE(added==(m));
+
+    //Let us test the move semantics with
 
 
 
-    //since test cases passed and they all used iterators, it is safe to assume that iterators also passed.
-
-
+    //since test cases passed and they all used iterators, it is safe to assume that iterators also passed
 }
