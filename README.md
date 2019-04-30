@@ -37,6 +37,20 @@ To invoke/Test the code; follow the following procedures.
 
 
 
+To simplify the above  processes: Just run the following commands
+
+1. make invert      //to invert
+2.make add         //to add
+3.make subtract     //to subtract
+4.make threshold   //to threshold
+5.make mask     //to mask
+6.make filter    //to filter
+
 These operations have been supported by overloading the operators(+,-,*,%,/,!)
 
-The Test.cpp class is used to unit test the code. Run it to see if the code passes all the tests. 
+
+for the testcases just run  the Test executable.
+
+run make test which calls the ./Testexec
+
+The Test.cpp class is used to unit test the code. Run it to see if the code passes all the tests.
