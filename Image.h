@@ -43,7 +43,8 @@ namespace MCHWIL006{
         Image & operator!();
         Image & operator/(const Image & rhs);
         Image & operator*(int f);
-        Image operator%(Matrix h);
+        Image operator%(Textdata h);
+        bool operator==(const Image & other);
 
         class Iterator{
 

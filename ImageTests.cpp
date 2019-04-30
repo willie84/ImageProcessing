@@ -71,6 +71,7 @@ TEST_CASE( "Testing the image methods copy constructor+default+invert+Threshold 
     REQUIRE(m4== (!m9)); //
 }
 
+///Task 2 for testing image methods adding+mask operators....
 TEST_CASE( "Testing the image methods adding+mask operators") {
    //generate a random image data -usigned array of characters
    //size = width*height
@@ -149,9 +150,29 @@ Image added=p3+p;// When these two are added they should give ma the original im
 
 REQUIRE(added==(m));
 
-    //Let us test the move semantics with
+
+}
 
 
+/////////TASK 3 FOR TESTING move Assignment+Move constructor+substract operator//////
+TEST_CASE( "Testing the image methods move Assignment+Move constructor+substract operator") {
+   //generate a random image data -usigned array of characters
+   //size = width*height
+   unsigned char* Imagedatasubstract1 = new unsigned char[60];
+   //unsigned char* Imagedata2 = new unsigned char[60];
+   for(int i = 0; i< 60; i++){
+        Imagedatasubstract1[i] = 1;
+       //this will be zero when threshold with an f of 80
+   }
 
-    //since test cases passed and they all used iterators, it is safe to assume that iterators also passed
+
+    unsigned char* Imagedatasubstract2 = new unsigned char[60];
+    for(int i = 0; i< 60; i++){
+         Imagedatasubstract2[i] = 0;
+        //this will be zero when threshold with an f of 80
+    }
+
+  //meaning if we minus Image with Imagedatasubstract1 with Imagedatasubstract2 we will get Imagedatasubstract1
+   Image tree(10,6,Imagedatasubstract1);
+    REQUIRE(tree==tree-Image(10,6,Imagedatasubstract2)); //This method call the move constructor+Move assignment
 }

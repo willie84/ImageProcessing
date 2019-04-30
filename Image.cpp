@@ -129,7 +129,7 @@ namespace MCHWIL006{
                 ++in;
             }
         }
-  cout<<"Addingttttttt"<<endl;
+  //cout<<"Addingttttttt"<<endl;
     //cout<<*this<<endl;
     //std::cout << "buda mjamaa" << '\n';
         return *this;
@@ -162,7 +162,7 @@ namespace MCHWIL006{
 
             Image::Iterator beg=this->begin();
             Image::Iterator end=this->end();
-        while(beg !=end){
+        while(beg!=end){
 
             *beg=255-*beg;
             ++beg;
@@ -362,20 +362,18 @@ int Image::reflect(int M, int x) //This mehod is for reflecting values of pixel 
 }
 bool Image::operator==(const Image & other) //This mehod is for reflecting values of pixel off the grid
 {
-    if(height==other.height && width==other.width)
-    {    int k=1;
-        for(int y=0;y<width*height;y++){
-          if(this->data[y]!=other.data[y]){
-            k*=0;
-            break;
-          }
+  if(sizeof(other.data.get())!= sizeof(data.get()))
+    return false;
 
-        }
-        if(k==1){return true;}
-        else{return false;}
-    }
-  return false;
+ for(int i = 0; i< sizeof(data.get()); i++){
+    if(data[i]!= other.data[i])
+       return false;
+
+ }
+ return true;
 }
+
+
 
 
 }
