@@ -169,10 +169,27 @@ TEST_CASE( "Testing the image methods move Assignment+Move constructor+substract
     unsigned char* Imagedatasubstract2 = new unsigned char[60];
     for(int i = 0; i< 60; i++){
          Imagedatasubstract2[i] = 0;
-        //this will be zero when threshold with an f of 80
-    }
 
-  //meaning if we minus Image with Imagedatasubstract1 with Imagedatasubstract2 we will get Imagedatasubstract1
+    }
    Image tree(10,6,Imagedatasubstract1);
     REQUIRE(tree==tree-Image(10,6,Imagedatasubstract2)); //This method call the move constructor+Move assignment
+}
+
+
+/////////TASK 4 FOR TESTING Iterators//////
+TEST_CASE( "Testing the Iterators Methods") {
+
+   unsigned char* ImagedataIterator = new unsigned char[60];
+   //unsigned char* Imagedata2 = new unsigned char[60];
+   for(int i = 0; i< 60; i++){
+        ImagedataIterator[i] = 1;
+       //this will be zero when threshold with an f of 80
+   }
+  Image p(10,6,ImagedataIterator);
+
+  Image::Iterator beg=p.begin();Image::Iterator end=p.end();
+
+
+   REQUIRE(*beg==1);
+   REQUIRE(*(--end)==1);
 }
