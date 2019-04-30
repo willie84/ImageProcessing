@@ -31,7 +31,7 @@ namespace MCHWIL006{
     }
 
     Image::~Image(){
-     cout<<"This is a destructor called"<<endl;
+     //cout<<"This is a destructor called"<<endl;
       data=nullptr;width=height=0;}
 
 
@@ -103,6 +103,7 @@ namespace MCHWIL006{
     void Image::save(std::string out){
       ofstream stream(out, ios::out | ios::binary | ios::app);
       stream << (*this);
+      cout<<"Your result image have been saved at "<<out<<endl;
   }
 
 
@@ -238,7 +239,7 @@ istream & operator >>(istream& pgdm,Image& other){
             while(toRead.compare("255")!=0){
                 if(toRead[0]!='#'){
                     if(toRead.compare("P5")!=0){
-                        cout<<toRead<<endl;
+                        //cout<<toRead<<endl;
                         istringstream stream (toRead);
                         stream>>hete;
                         stream>>wede;
@@ -248,11 +249,11 @@ istream & operator >>(istream& pgdm,Image& other){
                 }
 
                 getline(pgdm, toRead);
-                cout<<toRead<<endl;
+                //cout<<toRead<<endl;
             }
             cout<<"Height "<<other.height<<" The width is "<<other.width<<endl;
             int64_t arraysize=other.height*other.width;
-            cout<<arraysize<<endl;
+            //cout<<arraysize<<endl;
             other.data.reset(new unsigned char[arraysize]);
             //skipws(pgdm);
 
@@ -262,7 +263,7 @@ istream & operator >>(istream& pgdm,Image& other){
         return pgdm;
     }
 
-Image Image::operator%(Matrix h){
+Image Image::operator%(Textdata h){
 
   Image::Iterator beg=this->begin();
   Image::Iterator end=this->end();
@@ -330,7 +331,10 @@ Image Image::operator%(Matrix h){
       }
     }
     //cout<<p<<endl;
-    *beg=weightedsum;
+    if(weightedsum>255){
+    *beg=255;}
+
+    else{*beg=weightedsum;}
     //cout<<sum<<endl;
     ++beg;
     //cout<<"sumqawaqawe"<<endl;
@@ -355,6 +359,22 @@ int Image::reflect(int M, int x) //This mehod is for reflecting values of pixel 
         return (2*M )- (x)- 1;
     }
    return x;
+}
+bool Image::operator==(const Image & other) //This mehod is for reflecting values of pixel off the grid
+{
+    if(height==other.height && width==other.width)
+    {    int k=1;
+        for(int y=0;y<width*height;y++){
+          if(this->data[y]!=other.data[y]){
+            k*=0;
+            break;
+          }
+
+        }
+        if(k==1){return true;}
+        else{return false;}
+    }
+  return false;
 }
 
 
