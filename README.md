@@ -1,5 +1,5 @@
-This assignment 4 is focused on creating an image cointaner and a specialised Image iterator.
-The assignment also focuses on the concept of overloading operators such as ("=","%","+","-","*").
+This project focused on creating an image cointaner and a specialised Image iterator.
+The project also focuses on the concept of overloading operators such as ("=","%","+","-","*").
 
 The files that are extensively used are as follows:
     Image.h which is the header file of the image. This file cointains also the iterator class.
